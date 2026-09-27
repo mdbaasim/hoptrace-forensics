@@ -1,0 +1,33 @@
+Delivered-To: faculty-payroll@college.ac.in
+Received: by 103.141.51.10 with SMTP id inb_hub_nic;
+        Thu, 24 Sep 2026 16:40:10 +0530 (IST)
+Received: from relay-gw.secure-host.in (relay-gw.secure-host.in [103.20.12.55])
+        by mail.college.ac.in with ESMTP id 7712CC;
+        Thu, 24 Sep 2026 11:08:40 +0000
+Received: from vps-mail.m247-hosting.ro ([185.193.88.21])
+        by relay-gw.secure-host.in with ESMTP id 3321FF;
+        Thu, 24 Sep 2026 11:06:12 +0000
+Authentication-Results: college.ac.in;
+        spf=softfail;
+        dkim=none;
+        dmarc=fail (p=quarantine)
+From: "Income Tax Department e-Filing" <refunds@incometax-efiling-gov.site>
+To: "Assessee / Faculty" <faculty-payroll@college.ac.in>
+Reply-To: "Tax Settlement Officer" <disbursement@tax-refund-portal.top>
+Subject: FINAL NOTICE: Income Tax Refund of INR 42,850 Approved for AY 2026-27 (Claim Immediately)
+Date: Thu, 24 Sep 2026 16:35:00 +0530
+Message-ID: <itax.efiling.refund.2026@incometax-efiling-gov.site>
+Content-Type: text/plain; charset="UTF-8"
+
+Government of India - Income Tax Department (e-Filing Division)
+
+Dear Taxpayer,
+
+We are pleased to inform you that your refund calculation for Assessment Year 2026-27 has been successfully approved for the sum of INR 42,850.
+
+However, your registered State Bank of India account details were declined during electronic clearing due to missing branch IFSC verification.
+
+Please claim and disburse your pending tax refund directly to your net banking account:
+http://185.193.88.21/claim-refund/incometax-portal-login
+
+This refund link will expire within 24 hours. Unclaimed refunds will be forfeited to the Treasury.

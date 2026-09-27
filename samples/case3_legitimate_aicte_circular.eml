@@ -1,0 +1,34 @@
+Delivered-To: faculty@college.ac.in
+Received: by 103.141.51.10 with SMTP id nic_relay_in;
+        Tue, 22 Sep 2026 10:00:15 +0530 (IST)
+Received: from mail.nic.in (mail.nic.in [103.27.8.44])
+        by mx.college.ac.in with ESMTP id 44B901C2;
+        Tue, 22 Sep 2026 04:30:00 +0000
+Authentication-Results: college.ac.in;
+        spf=pass (mail.nic.in: domain of aicte-india.org designates 103.27.8.44 as permitted sender);
+        dkim=pass (signature verified);
+        dmarc=pass (p=reject)
+Received-SPF: pass (aicte-india.org: domain designates 103.27.8.44 as permitted sender)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aicte-india.org; s=202601;
+        bh=k4l3m2n1o0p9q8r7s6t5u4v3w2x1y0z=;
+        b=AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789=
+From: "AICTE Media & Academic Cell" <noreply@aicte-india.org>
+To: "All Approved Technical Institutions" <all-colleges@aicte-india.org>
+Return-Path: <noreply@aicte-india.org>
+Subject: Announcement: National Faculty Development Program on Cybersecurity & Cloud Forensics 2026
+Date: Tue, 22 Sep 2026 10:00:00 +0530
+Message-ID: <circular.2026.09.22.8871@aicte-india.org>
+Content-Type: text/plain; charset="UTF-8"
+
+Greetings from All India Council for Technical Education (AICTE),
+
+We are pleased to announce the schedule for the two-week National Faculty Development Program (FDP) on Cybersecurity, Incident Response, and Digital Forensics scheduled for October 2026.
+
+Faculty members can register online through the official AICTE ATAL Academy portal:
+https://www.aicte-india.org/atal
+
+Participation is free of cost for faculty of AICTE approved colleges. For queries, contact fdp-support@aicte-india.org.
+
+Regards,
+Directorate of Academic Planning, AICTE
+Nelson Mandela Marg, Vasant Kunj, New Delhi-110070

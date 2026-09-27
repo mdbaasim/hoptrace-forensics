@@ -1,0 +1,35 @@
+Delivered-To: principal@engg-college.ac.in
+Received: by 103.141.51.10 with SMTP id inb_srv45;
+        Thu, 24 Sep 2026 08:35:12 +0530 (IST)
+Received: from mx2.securemail-in.net (mx2.securemail-in.net [194.26.29.112])
+        by college-mail.ac.in (MTA Relay) with ESMTP id 88B4C90A;
+        Thu, 24 Sep 2026 03:04:45 +0000
+Received: from tor-relay.exit-node.de (tor-relay.exit-node.de [185.220.101.5])
+        by mx2.securemail-in.net with ESMTP id 11C82F10;
+        Thu, 24 Sep 2026 03:02:10 +0000
+Authentication-Results: college-mail.ac.in;
+        spf=fail (sender IP 185.220.101.5 is not authorized by aicte-india.org);
+        dkim=fail (bad signature)
+Received-SPF: fail (college-mail.ac.in: domain of aicte-india.org does not designate 185.220.101.5 as permitted sender)
+From: "Member Secretary, AICTE" <membersecretary@аicte-india.org>
+To: "Principal / Director" <principal@engg-college.ac.in>
+Reply-To: "AICTE Desk" <compliance-desk@secure-aicte-portal.top>
+Subject: CRITICAL: Immediate Revocation of AICTE Approval for 2026-27 (Action Required within 24 Hours)
+Date: Thu, 24 Sep 2026 08:31:00 +0530
+Message-ID: <20260924.88123.aicte@secure-portal.top>
+Content-Type: text/plain; charset="UTF-8"
+
+URGENT AND CONFIDENTIAL NOTICE:
+
+It has come to the attention of the All India Council for Technical Education (AICTE) Inspection Committee that your institution has failed mandatory compliance parameters under the National Technical Quality Standards 2026.
+
+Unless the compliance regularization penalty of INR 2,50,000 is transferred immediately to the dedicated scrutiny escrow account within 24 hours, your institution's approved seat intake will be suspended and approval revoked with immediate effect.
+
+Please complete the statutory wire transfer immediately:
+Account Name: AICTE Regulatory Escrow Bureau
+Bank: National Scrutiny Bank
+Account Number: 918273645102
+IFSC Code: NSCR0001824
+
+Failure to remit the payment within 24 hours will result in immediate police FIR and blacklisting. Access the verification portal here:
+http://185.220.101.5/login-verify/portal-auth

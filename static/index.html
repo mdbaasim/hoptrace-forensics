@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>HopTrace Forensics — Email Threat Detection & Forensic Platform (SIH 2026 / PS-26106)</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <!-- Government Theme CSS (v12.0 cache buster) -->
+    <link rel="stylesheet" href="/static/style.css?v=12.0">
+</head>
+<body>
+
+    <!-- 1. Indian National Tricolor Ribbon -->
+    <div class="govt-tricolor-strip">
+        <span class="strip-saffron"></span>
+        <span class="strip-white"></span>
+        <span class="strip-green"></span>
+    </div>
+
+    <!-- 2. Official Government Institutional Header -->
+    <header class="govt-header">
+        <div class="govt-header-left">
+            <!-- Institutional Cyber Defense Emblem -->
+            <div class="govt-emblem-wrap">
+                <svg viewBox="0 0 100 100" width="42" height="42">
+                    <path d="M50 8 L85 24 V52 C85 74 69 91 50 96 C31 91 15 74 15 52 V24 Z" fill="none" stroke="#003366" stroke-width="4.5" stroke-linejoin="round"/>
+                    <path d="M50 14 L80 28 V52 C80 70 66 85 50 89.5 C34 85 20 70 20 52 V28 Z" fill="#f0f4f8" stroke="#0b4f8a" stroke-width="2"/>
+                    <path d="M30 24 L50 15 L70 24" fill="none" stroke="#FF9933" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="50" cy="46" r="10" fill="#003366"/>
+                    <path d="M45 48 L41 68 H59 L55 48 Z" fill="#003366"/>
+                    <circle cx="50" cy="46" r="4" fill="#FF9933"/>
+                    <circle cx="50" cy="78" r="3" fill="#138808"/>
+                </svg>
+            </div>
+            <div class="govt-title-block">
+                <div class="govt-platform-title">HopTrace Forensics Platform</div>
+                <div class="govt-platform-sub">AICTE Cyber Security Cell • Smart India Hackathon 2026 (Problem Statement 26106)</div>
+            </div>
+        </div>
+
+        <div class="govt-header-right">
+            <!-- Official Live Calendar Date Pill -->
+            <div class="govt-date-pill" id="liveDate" style="font-size: 11px; font-weight: 700; color: #475569; background: #f8fafc; border: 1px solid #cbd5e1; padding: 5px 11px; border-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase;"></div>
+
+            <!-- Investigator Sign-In & Clearance Badge -->
+            <div class="govt-officer-pill" onclick="openLoginModal()" title="Click to view officer credentials or authenticate session">
+                <div class="pulse-indicator"></div>
+                <div class="officer-text">
+                    <span class="officer-sub">EXAMINER CLEARANCE</span>
+                    <span class="officer-id" id="officerBadgeLabel">OFFICER: INV-7821 (TIER 3)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. Horizontal Navigation Bar (Govt Deep Navy Blue) -->
+    <nav class="govt-nav">
+        <div class="nav-container">
+            <a class="nav-link active" onclick="switchPage('live-scanner', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="22" y1="12" x2="18" y2="12"></line>
+                    <line x1="6" y1="12" x2="2" y2="12"></line>
+                    <line x1="12" y1="6" x2="12" y2="2"></line>
+                    <line x1="12" y1="22" x2="12" y2="18"></line>
+                    <circle cx="12" cy="12" r="4"></circle>
+                </svg>
+                <span>Email Threat Scanner</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('dashboard', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="9"></rect>
+                    <rect x="14" y="3" width="7" height="5"></rect>
+                    <rect x="14" y="12" width="7" height="9"></rect>
+                    <rect x="3" y="16" width="7" height="5"></rect>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('origin-map', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span>Origin Map</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('forensic-hops', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>Forensic Hops</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('protocol-auth', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Protocol Auth</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('ai-threats', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>AI Threat Intel</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('evidence-ledger', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Evidence Ledger</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('campaigns', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                <span>Campaign Graphs</span>
+            </a>
+
+            <a class="nav-link" onclick="switchPage('settings', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Settings & Privacy</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 4. Main Workspace Content Area -->
+    <main class="main-wrapper">
+
+        <!-- ================= PAGE 1: EMAIL THREAT SCANNER & SIMULATION ================= -->
+        <div id="page-live-scanner" class="page-view active">
+            <!-- Hero Banner Strip -->
+            <div class="scanner-hero-strip">
+                <div class="scanner-hero-left">
+                    <div class="scanner-hero-pill">NATIONAL SOC INCIDENT SIMULATION &amp; AUDIT GATEWAY</div>
+                    <h1 class="scanner-hero-title">Live Email Threat Scanner &amp; Simulation Studio</h1>
+                    <p class="scanner-hero-sub">Audit arbitrary sender identities, test spoofed headers, and simulate advanced multi-hop phishing or extortion threats in real time.</p>
+                </div>
+                <div class="scanner-hero-right">
+                    <div class="scanner-status-indicator">
+                        <div class="pulse-indicator"></div>
+                        <span>TELEMETRY ENGINE: ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2-Column Responsive Workspace Grid -->
+            <div class="scanner-page-grid">
+                <!-- Left Column: Interactive Audit & Simulation Studio -->
+                <div class="scanner-panel scanner-form-panel">
+                    <div class="panel-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2.2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        <span>Email Transmission &amp; Header Parameters</span>
+                    </div>
+
+                    <form onsubmit="handleLiveEmailScan(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label-bold">Sender Email Address (To Audit) *</label>
+                                <input type="text" id="liveEmailInput" class="form-input" placeholder="e.g. membersecretary@aicte-ındıa.org" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-bold">Sender Display Name</label>
+                                <input type="text" id="liveFromNameInput" class="form-input" placeholder="e.g. Member Secretary AICTE">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label-bold">Origin Relay Server IP</label>
+                                <select id="liveOriginIpSelect" class="form-select">
+                                    <option value="auto">Auto-Detect Server Infrastructure</option>
+                                    <option value="185.220.101.5">185.220.101.5 (Tor Exit Node - Frankfurt, Germany)</option>
+                                    <option value="185.220.102.8">185.220.102.8 (Tor Relay - Amsterdam, Netherlands)</option>
+                                    <option value="185.193.88.21">185.193.88.21 (Bulletproof Host - Bucharest, Romania)</option>
+                                    <option value="118.193.41.102">118.193.41.102 (Proxy Datacenter - Hong Kong)</option>
+                                    <option value="198.98.56.12">198.98.56.12 (Commercial VPN - Dallas, USA)</option>
+                                    <option value="103.27.8.44">103.27.8.44 (NIC Govt Network - New Delhi, India)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-bold">Reply-To Address (Optional)</label>
+                                <input type="text" id="liveReplyToInput" class="form-input" placeholder="e.g. secure-funds-transfer@univ-finance-desk.net">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label-bold">Subject Line *</label>
+                            <input type="text" id="liveSubjectInput" class="form-input" placeholder="e.g. CRITICAL: Immediate AICTE Affiliation Revocation Notice">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label-bold">Email Message Body (For NLP &amp; Behavioral Threat Analysis) *</label>
+                            <textarea id="liveBodyInput" class="form-input form-textarea" rows="6" placeholder="Enter or paste email body text to analyze extortion demands, legal coercion, or malicious download links..."></textarea>
+                        </div>
+
+                        <!-- Unified Tactical Threat Simulation Matrix -->
+                        <div class="tactical-matrix-card">
+                            <div class="matrix-header">
+                                <div class="matrix-title-left">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2.3">
+                                        <rect x="2" y="2" width="20" height="20" rx="3"></rect>
+                                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                                    </svg>
+                                    <span class="matrix-title-text">TACTICAL THREAT SCENARIO MATRIX</span>
+                                </div>
+                                <span class="matrix-help-badge">Click scenario to auto-audit</span>
+                            </div>
+
+                            <!-- 6 Grid Scenarios with Threat Badges -->
+                            <div class="matrix-scenarios-grid">
+                                <button type="button" class="matrix-scenario-card threat-danger" onclick="quickFillAndScan('membersecretary@\u0430icte-india.org', 'CRITICAL: Immediate AICTE Affiliation Revocation Notice', '185.220.101.5', 'Penalty regularization payment of INR 2,50,000 must be transferred immediately within 24 hours to prevent immediate police FIR and institutional derecognition.', 'Member Secretary AICTE')">
+                                    <div class="scenario-card-top">
+                                        <span class="scenario-name">AICTE Homoglyph Spoof</span>
+                                        <span class="scenario-tag danger">HOMOGLYPH / TOR</span>
+                                    </div>
+                                    <div class="scenario-card-sub">Cyrillic lookalike domain routed via Frankfurt Tor exit node</div>
+                                </button>
+
+                                <button type="button" class="matrix-scenario-card threat-warning" onclick="quickFillAndScan('billing@univ-finance-desk.net', 'URGENT: Updated Bank Details for Invoice #INV-2026-8812', '198.98.56.12', 'Do not disburse funds to our old account. Please wire INR 14,50,000 to our updated corporate account immediately to avoid supply termination.', 'University Accounts Vendor')">
+                                    <div class="scenario-card-top">
+                                        <span class="scenario-name">Campus BEC Wire Fraud</span>
+                                        <span class="scenario-tag warning">PAYMENT DIVERSION</span>
+                                    </div>
+                                    <div class="scenario-card-sub">Impersonated supplier invoice redirecting vendor escrow payment</div>
+                                </button>
+
+                                <button type="button" class="matrix-scenario-card threat-danger" onclick="quickFillAndScan('support@aicte-pmsss-gov.in', 'CONFIRMATION: PMSSS Scholarship 2026 Verification Pending', '185.220.102.8', 'Your scholarship disbursement of INR 50,000 is on hold. Verify student portal net banking credentials immediately to avoid cancellation.', 'PMSSS Scholarship Bureau')">
+                                    <div class="scenario-card-top">
+                                        <span class="scenario-name">PMSSS Scholarship Phish</span>
+                                        <span class="scenario-tag danger">CREDENTIAL THEFT</span>
+                                    </div>
+                                    <div class="scenario-card-sub">Fake portal harvesting net banking credentials via Amsterdam Tor</div>
+                                </button>
+
+                                <button type="button" class="matrix-scenario-card threat-warning" onclick="quickFillAndScan('refunds@incometax-efiling-gov.site', 'FINAL NOTICE: Income Tax Refund of INR 42,850 Approved', '185.193.88.21', 'Your refund calculation for AY 2026-27 has been approved for INR 42,850. Confirm net banking login details immediately to receive funds within 2 hours.', 'Income Tax Department')">
+                                    <div class="scenario-card-top">
+                                        <span class="scenario-name">Income Tax Refund Scam</span>
+                                        <span class="scenario-tag warning">GOVT SPOOFING</span>
+                                    </div>
+                                    <div class="scenario-card-sub">Lookalike .site domain relayed through bulletproof host in Bucharest</div>
+                                </button>
+
+                                <button type="button" class="matrix-scenario-card threat-purple" onclick="quickFillAndScan('invoices@campus-hardware-store.com', 'ACTION REQUIRED: Overdue Lab Hardware Invoice #INV-9901', '118.193.41.102', 'Please review the attached formal statement immediately: http://118.193.41.102/invoices/Statement_PO_2026.pdf.exe', 'Campus IT Vendor')">
+                                    <div class="scenario-card-top">
+                                        <span class="scenario-name">Campus Ransomware Dropper</span>
+                                        <span class="scenario-tag purple">MALWARE ATTACHMENT</span>
+                                    </div>
+                                    <div class="scenario-card-sub">Double-extension .pdf.exe payload delivered from Hong Kong proxy</div>
+                                </button>
+
+                                <button type="button" class="matrix-scenario-card threat-success" onclick="quickFillAndScan('noreply@aicte-india.org', 'Official Circular: National Cyber Security Faculty Development Program', '103.27.8.44', 'Official circular from All India Council for Technical Education regarding the National Faculty Development Program on Cyber Forensics.', 'AICTE Official Desk')">
+                                    <div class="scenario-card-top">
+                                        <span class="scenario-name">Legitimate AICTE Circular</span>
+                                        <span class="scenario-tag success">NIC GOVT / CLEAN</span>
+                                    </div>
+                                    <div class="scenario-card-sub">Genuine circular authenticated through official NIC New Delhi relay</div>
+                                </button>
+                            </div>
+
+                            <!-- Live Attack Vector Ingestion Toolbar -->
+                            <div class="matrix-inject-bar">
+                                <div class="inject-bar-label">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.3">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                    </svg>
+                                    <span>INJECT ATTACK VECTORS (TEST REAL-TIME NLP SCORING):</span>
+                                </div>
+                                <div class="inject-buttons-row">
+                                    <button type="button" class="inject-toolbar-btn" onclick="injectCueToScanner('extortion')">
+                                        <span>+ INR 50,000 Extortion Demand</span>
+                                    </button>
+                                    <button type="button" class="inject-toolbar-btn" onclick="injectCueToScanner('fir')">
+                                        <span>+ 24h Police FIR Arrest Threat</span>
+                                    </button>
+                                    <button type="button" class="inject-toolbar-btn" onclick="injectCueToScanner('bank')">
+                                        <span>+ Fake Regulatory Bank Escrow</span>
+                                    </button>
+                                    <button type="button" class="inject-toolbar-btn" onclick="injectCueToScanner('dropper')">
+                                        <span>+ .pdf.exe Dropper Download Link</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Button Bar -->
+                        <div class="scanner-btn-row">
+                            <button type="submit" class="btn-primary-scanner" id="scannerSubmitBtn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <span id="scannerBtnLabel">Audit &amp; Trace Email</span>
+                            </button>
+                            <button type="button" class="btn-secondary-scanner" onclick="resetScannerForm()">
+                                <span>Reset Form</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Real-Time Forensic Verdict & Live Telemetry -->
+                <div class="scanner-panel scanner-verdict-panel">
+                    <div class="verdict-header-row">
+                        <div class="verdict-title-wrap">
+                            <span class="govt-status-pill">REAL-TIME FORENSIC VERDICT</span>
+                            <h2 class="verdict-card-title">Threat Assessment &amp; Telemetry</h2>
+                        </div>
+                        <span class="trend-badge danger" id="scannerRiskBadge">CRITICAL THREAT</span>
+                    </div>
+
+                    <!-- Big Score Display -->
+                    <div class="verdict-score-card">
+                        <div class="verdict-score-left">
+                            <span class="score-label">COMPOSITE THREAT SCORE</span>
+                            <div class="score-number-display" id="scannerThreatScore">100 / 100</div>
+                            <div class="score-verdict-text" id="scannerVerdictVerdict">MALICIOUS IMPERSONATION DETECTED</div>
+                        </div>
+                        <div class="verdict-score-right">
+                            <div class="score-meter-wrap">
+                                <div class="meter-bar-fill" id="scannerScoreMeter" style="width: 100%; background-color: var(--danger);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Findings Breakdown -->
+                    <div class="verdict-findings-grid">
+                        <div class="finding-item">
+                            <span class="finding-label">SERVER ORIGIN &amp; GEOLOCATION</span>
+                            <span class="finding-val" id="scannerOriginVal">185.220.101.5 - Frankfurt, Germany</span>
+                            <span class="finding-sub" id="scannerOriginClassVal">Tor Exit Node (High Risk)</span>
+                        </div>
+                        <div class="finding-item">
+                            <span class="finding-label">IDENTITY &amp; HOMOGLYPH CHECK</span>
+                            <span class="finding-val" id="scannerHomoglyphVal">Cyrillic Spoofing Detected: 'a' (U+0430)</span>
+                            <span class="finding-sub" id="scannerHomoglyphSub">Punycode: xn--icte-india-k1a.org</span>
+                        </div>
+                        <div class="finding-item">
+                            <span class="finding-label">PROTOCOL AUTHENTICATION</span>
+                            <div class="auth-pills-row">
+                                <span class="auth-mini-pill fail" id="scannerSpfPill">SPF: FAIL</span>
+                                <span class="auth-mini-pill fail" id="scannerDkimPill">DKIM: FAIL</span>
+                                <span class="auth-mini-pill fail" id="scannerDmarcPill">DMARC: REJECT</span>
+                            </div>
+                        </div>
+                        <div class="finding-item">
+                            <span class="finding-label">DETECTED NLP BEHAVIORAL SIGNALS</span>
+                            <div class="cues-pill-row" id="scannerCuesContainer">
+                                <span class="cue-pill">Financial Extortion</span>
+                                <span class="cue-pill">Legal Threat</span>
+                                <span class="cue-pill">Artificial Urgency</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deep Dive Action Links -->
+                    <div class="verdict-deep-dives">
+                        <span class="deep-dive-title">Direct Forensic Investigations:</span>
+                        <div class="deep-dive-btn-grid">
+                            <button type="button" class="deep-dive-btn" onclick="switchPage('origin-map')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                <span>View Origin Server on Global Map</span>
+                            </button>
+                            <button type="button" class="deep-dive-btn" onclick="switchPage('forensic-hops')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                <span>Inspect 8-Hop Transmission Chain</span>
+                            </button>
+                            <button type="button" class="deep-dive-btn" onclick="switchPage('evidence-ledger')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                <span>View Section 65B Digital Court Evidence</span>
+                            </button>
+                            <button type="button" class="deep-dive-btn primary-jump" onclick="switchPage('dashboard')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                                <span>Open Full SOC Dashboard</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 2: DASHBOARD ================= -->
+        <div id="page-dashboard" class="page-view">
+
+            <!-- Incident Case Bar (Enterprise Single-Line SOC Triage Bar) -->
+            <div class="case-status-bar">
+                <div class="case-info-left">
+                    <span class="case-label">CASE FILE:</span>
+                    <span class="case-id-badge" id="activeCaseIdDisplay">CASE-2026-F37229</span>
+                    
+                    <span class="case-divider">|</span>
+                    
+                    <span class="case-label">ACTIVE INCIDENT:</span>
+                    <select id="caseSelectorDropdown" class="case-dropdown-select" onchange="loadSample(this.value)">
+                        <option value="aicte_impersonation">Case 1: AICTE Official Impersonation (Homoglyph + Tor)</option>
+                        <option value="bec_payment_diversion">Case 2: Campus Vendor Payment Diversion (BEC Wire Fraud)</option>
+                        <option value="scholarship_theft">Case 3: PMSSS Scholarship Phishing (Tor Exit Amsterdam)</option>
+                        <option value="incometax_refund">Case 4: Income Tax Refund Notice (Bulletproof Bucharest)</option>
+                        <option value="ransomware_invoice">Case 5: Overdue Lab Hardware Invoice (Hong Kong Dropper)</option>
+                        <option value="legitimate_circular">Case 6: Legitimate AICTE Official Circular (NIC Clean)</option>
+                    </select>
+                    <span id="activeCaseTitleDisplay" style="display: none;">AICTE Official Impersonation</span>
+                </div>
+
+                <div class="case-actions-right">
+                    <button class="upload-action-btn" onclick="document.getElementById('fileInput').click()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Upload .EML File</span>
+                    </button>
+                    <button class="simulation-action-btn" onclick="openSimulatorModal()" title="Simulate, edit, or test custom email threats">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        <span>Simulate / Edit Mail</span>
+                    </button>
+                    <input type="file" id="fileInput" accept=".eml,.msg,.txt" style="display: none;">
+                </div>
+            </div>
+
+            <!-- 4 Top Metric Cards (Overview) -->
+            <section class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Threat Score (0 to 100)</span>
+                        <span class="trend-badge danger" id="riskBadge">CRITICAL</span>
+                    </div>
+                    <div class="metric-value" id="cardThreatScore" style="color: var(--danger);">100 / 100</div>
+                    <span class="metric-sub" id="cardThreatSub">AICTE Homoglyph Extortion</span>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Server Path (Hops)</span>
+                        <span class="trend-badge purple" id="hopsBadge">3 HOPS</span>
+                    </div>
+                    <div class="metric-value" id="cardHopCount">3 Nodes</div>
+                    <span class="metric-sub" id="cardHopSub">Multi-hop relay chain</span>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Real Sender Location & IP</span>
+                        <span class="trend-badge danger" id="originBadge">TOR EXIT</span>
+                    </div>
+                    <div class="metric-value" id="cardOriginCountry">Germany</div>
+                    <span class="metric-sub" id="cardOriginIp">185.220.101.5 (Tor Relay)</span>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Email Verification (SPF / DKIM)</span>
+                        <span class="trend-badge danger" id="authScoreBadge">0.0 %</span>
+                    </div>
+                    <div class="metric-value" id="cardAuthScore">0 % Pass</div>
+                    <span class="metric-sub" id="cardAuthSub">SPF & DKIM Failed</span>
+                </div>
+            </section>
+
+            <!-- Middle Section: 2-Column Panels -->
+            <section class="middle-grid">
+                <!-- Left: Email Content & Message Details -->
+                <div class="content-card">
+                    <div class="content-card-header">
+                        <span class="content-card-title">Email Message & Header Details</span>
+                        <span class="trend-badge danger" id="dashThreatBadge">THREAT DETECTED</span>
+                    </div>
+
+                    <!-- Metadata Header Grid -->
+                    <div class="payload-meta-box">
+                        <div class="meta-row">
+                            <span class="meta-label">FROM:</span>
+                            <span id="dashFromDisplay" class="meta-val mono"></span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">REPLY-TO:</span>
+                            <span id="dashReplyToDisplay" class="meta-val mono" style="color: var(--danger);"></span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">SUBJECT:</span>
+                            <span id="dashSubjectDisplay" class="meta-val bold"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email Body Content -->
+                    <div class="payload-body-box">
+                        <span class="body-box-title">Email Content Preview:</span>
+                        <div id="dashBodyDisplay" class="body-box-text"></div>
+                    </div>
+                </div>
+
+                <!-- Right: Real Sender Location & Network -->
+                <div class="content-card">
+                    <div class="content-card-header">
+                        <span class="content-card-title">Real Sender Location & Internet Provider</span>
+                        <span class="view-all-link" onclick="switchPage('origin-map')">Open Map &rarr;</span>
+                    </div>
+
+                    <div class="origin-meta-box">
+                        <div class="meta-row border-bottom">
+                            <span class="meta-label">REAL SENDER IP:</span>
+                            <span id="dashOriginIp" class="meta-val mono origin-ip"></span>
+                        </div>
+                        <div class="meta-row border-bottom">
+                            <span class="meta-label">LOCATION:</span>
+                            <span id="dashOriginGeo" class="meta-val bold"></span>
+                        </div>
+                        <div class="meta-row border-bottom">
+                            <span class="meta-label">CONNECTION TYPE:</span>
+                            <span id="dashOriginClass" class="trend-badge danger">TOR EXIT NODE</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">INTERNET PROVIDER:</span>
+                            <span id="dashOriginIsp" class="meta-val dim"></span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card-action-bar">
+                        <button class="action-btn-primary" onclick="switchPage('origin-map')">
+                            <span>View Sender on Map</span>
+                        </button>
+                        <button class="action-btn-secondary" onclick="openBlockchainModal()">
+                            <span>View Court Evidence</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================= PAGE 2: ORIGIN MAP ================= -->
+        <div id="page-origin-map" class="page-view">
+            <div class="content-card" style="min-height: calc(100vh - 240px);">
+                <div class="content-card-header">
+                    <div>
+                        <span class="content-card-title">Interactive Global Sender Map</span>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">
+                            Visual flight path showing every server the email passed through from the real sender to the recipient.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 14px; font-size: 11.5px; font-weight: 700;">
+                        <span style="color: var(--danger);">[ORIGIN] Real Sender (Hop 1)</span>
+                        <span style="color: var(--purple);">[RELAY] Email Servers Passed</span>
+                    </div>
+                </div>
+                <div style="flex: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); min-height: 500px;">
+                    <div id="fullHopMap" style="width: 100%; height: 100%; min-height: 500px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 3: FORENSIC HOPS ================= -->
+        <div id="page-forensic-hops" class="page-view">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <div>
+                        <span class="content-card-title">Full Email Server Path (Hop-by-Hop)</span>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">
+                            Chronological trace of the email journey. Hop #1 shows the real sender's computer or server before relays.
+                        </p>
+                    </div>
+                    <button class="upload-action-btn" onclick="exportForensicPdf()">
+                        <span>Download Evidence Report</span>
+                    </button>
+                </div>
+                <div id="hopsFullChain" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 4: PROTOCOL AUTH ================= -->
+        <div id="page-protocol-auth" class="page-view">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <span class="content-card-title">Email Verification & Fake Domain Checks</span>
+                    <span class="trend-badge danger" id="pageAuthStatusBadge">AUTH FAILED</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;">
+                    <div class="metric-card" style="background: var(--bg-subtle);">
+                        <span class="metric-title">SPF Verification</span>
+                        <div class="metric-value" id="pageSpfStatus" style="font-size: 18px;">FAIL</div>
+                        <span class="metric-sub" id="pageSpfDetail"></span>
+                    </div>
+                    <div class="metric-card" style="background: var(--bg-subtle);">
+                        <span class="metric-title">DKIM Digital Signature</span>
+                        <div class="metric-value" id="pageDkimStatus" style="font-size: 18px;">FAIL</div>
+                        <span class="metric-sub" id="pageDkimDetail"></span>
+                    </div>
+                    <div class="metric-card" style="background: var(--bg-subtle);">
+                        <span class="metric-title">DMARC Sender Policy</span>
+                        <div class="metric-value" id="pageDmarcStatus" style="font-size: 18px;">FAIL</div>
+                        <span class="metric-sub" id="pageDmarcDetail"></span>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--primary);">Fake Lookalike Domain Check (Homoglyphs)</h4>
+                    <div id="pageHomoglyphDetails" style="font-size: 12.5px; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 5: AI THREAT INTEL ================= -->
+        <div id="page-ai-threats" class="page-view">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <span class="content-card-title">AI Scam & Social Engineering Detection</span>
+                    <span class="trend-badge danger" id="pageAiCategoryBadge">BEC / EXTORTION</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 14px;">
+                    <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                        <h4 style="font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 12px;">Scam Warning Signs & Fake Roles</h4>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div><strong style="color: var(--text-dim); font-size: 11px;">Urgency Words Found:</strong></div>
+                            <div id="pageDetectedCues" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                            <div style="margin-top: 10px;"><strong style="color: var(--text-dim); font-size: 11px;">Fake Roles Impersonated:</strong></div>
+                            <div id="pageDetectedRoles" style="color: var(--danger); font-weight: 700; font-size: 12.5px;"></div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                        <h4 style="font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 8px;">Dangerous Links in Email (Neutralized)</h4>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 10px;">
+                            All web links disarmed into safe hxxps text so investigators don't accidentally click malicious sites:
+                        </p>
+                        <div id="pageDefangedUrls" style="font-family: var(--font-mono); font-size: 11.5px; display: flex; flex-direction: column; gap: 6px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 6: EVIDENCE LEDGER & SECTION 65B ================= -->
+        <div id="page-evidence-ledger" class="page-view">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <span class="content-card-title">Court-Admissible Evidence (Sec 65B Certificate)</span>
+                    <button class="upload-action-btn" onclick="exportForensicPdf()">
+                        <span>Print Legal Court Certificate (PDF)</span>
+                    </button>
+                </div>
+
+                <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 18px; font-family: var(--font-mono); font-size: 12px; margin: 16px 0; display: flex; flex-direction: column; gap: 8px;">
+                    <div><strong style="color: var(--text-dim);">CASE ID:</strong> <span id="ledgerCaseId" style="color: var(--primary); font-weight: 800;"></span></div>
+                    <div><strong style="color: var(--text-dim);">EVIDENCE FINGERPRINT (SHA-256):</strong> <span id="ledgerSha256" style="color: var(--success); font-weight: 700;"></span></div>
+                    <div><strong style="color: var(--text-dim);">INTEGRITY HASH (SHA-512):</strong> <span id="ledgerSha512" style="color: var(--text-secondary); font-size: 11px; word-break: break-all;"></span></div>
+                    <div><strong style="color: var(--text-dim);">BLOCKCHAIN EVIDENCE RECORD:</strong> Polygon PoS Mainnet</div>
+                    <div><strong style="color: var(--text-dim);">BLOCK NUMBER:</strong> #<span id="ledgerBlockNum" style="color: var(--purple); font-weight: 700;"></span></div>
+                    <div><strong style="color: var(--text-dim);">TRANSACTION ID:</strong> <span id="ledgerTxHash" style="color: var(--danger); word-break: break-all; font-weight: 700;"></span></div>
+                    <div><strong style="color: var(--text-dim);">STATUS:</strong> <span style="color: var(--success); font-weight: 800;">VERIFIED & TAMPER-PROOF (128 BLOCK CONFIRMATIONS)</span></div>
+                </div>
+
+                <div style="background: var(--bg-subtle); border-left: 3px solid var(--accent-saffron); border-radius: var(--radius-sm); padding: 16px; font-size: 12.5px; line-height: 1.6;">
+                    <strong style="color: var(--primary);">Official Court Evidence Declaration (Ready for Police FIR & Trial):</strong>
+                    <p id="ledgerDeclaration" style="color: var(--text-secondary); margin-top: 6px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 7: CAMPAIGNS & ATTRIBUTION ================= -->
+        <div id="page-campaigns" class="page-view">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <div>
+                        <span class="content-card-title">Related Cyber Attacks Across Other Colleges</span>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">
+                            Finds other Indian universities and colleges targeted by the same scammer or fake domain:
+                        </p>
+                    </div>
+                    <span class="trend-badge danger">LINKED ATTACK CAMPAIGN</span>
+                </div>
+                <div id="campaignListFull" style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px;"></div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 8: SETTINGS & PRIVACY ================= -->
+        <div id="page-settings" class="page-view">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <span class="content-card-title">System Settings & Privacy Protection</span>
+                    <span class="trend-badge success">PROTECTION ACTIVE</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px;">
+                    <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="font-size: 13.5px; color: var(--primary);">Mask Private Information (PII)</strong>
+                            <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                                Automatically hides student and faculty names, phone numbers, and bank details in email previews to protect privacy.
+                            </p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="piiSettingToggle" onchange="syncPii(this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                        <strong style="font-size: 13.5px; color: var(--primary);">Internal Network Protection (Anti-SSRF)</strong>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                            Status: <span style="color: var(--success); font-weight: 700;">ENFORCED</span> — Blocks hackers from scanning internal campus networks (10.x, 192.168.x).
+                        </p>
+                    </div>
+
+                    <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                        <strong style="font-size: 13.5px; color: var(--primary);">Indian Legal Standards Compliance</strong>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                            Complies with Section 63 of Bharatiya Sakshya Adhiniyam (BSA), 2023 and Section 65B of Indian Evidence Act, 1872 for cybercrime court trials.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Hidden state checkbox -->
+    <input type="checkbox" id="piiToggle" style="display: none;">
+
+    <!-- ================= 5. Official Government Footer ================= -->
+    <footer class="govt-footer">
+        <div class="footer-top-text">
+            HopTrace Forensics • Developed for AICTE Cyber Security Cell
+        </div>
+        <div class="footer-sub-text">
+            Smart India Hackathon (SIH) 2026 • Problem Statement 26106: AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform
+        </div>
+    </footer>
+
+    <!-- ================= INVESTIGATOR AUTH / SIGN-IN MODAL ================= -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-dialog">
+            <button class="modal-close-btn" onclick="closeLoginModal()">&times;</button>
+            
+            <div class="modal-title-row">
+                <div class="modal-icon-badge">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">Officer Login & Credentials</h2>
+                    <p style="font-size: 11px; color: var(--text-dim); font-weight: 600;">HopTrace Security Workstation — Verified Access</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleInvestigatorLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Officer Badge / ID</label>
+                    <input type="text" id="officerIdInput" class="form-input" value="INV-AICTE-7821" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Security Role / Clearance</label>
+                    <select id="officerRoleInput" class="form-select">
+                        <option value="Lead Forensic Examiner">Lead Digital Forensic Examiner (Tier 3)</option>
+                        <option value="SOC Incident Responder">SOC Incident Responder (Tier 2)</option>
+                        <option value="CERT-In Institutional Liaison">CERT-In Institutional Liaison</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Security Key / PIN</label>
+                    <input type="password" class="form-input" value="••••••••••••" placeholder="Enter secure authorization key">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+                    <button type="button" class="action-btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                    <button type="submit" class="action-btn-primary">Authenticate Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: BLOCKCHAIN EVIDENCE CERTIFICATE ================= -->
+    <div class="modal-overlay" id="evidenceModal">
+        <div class="modal-dialog">
+            <button class="modal-close-btn" onclick="closeBlockchainModal()">&times;</button>
+            
+            <div class="modal-title-row">
+                <div class="modal-icon-badge" style="background-color: var(--accent-saffron);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">Tamper-Proof Court Evidence Certificate</h2>
+                    <p style="font-size: 11px; color: var(--text-dim); font-weight: 600;">Ready for Legal Police FIR & Court Trial (Section 65B)</p>
+                </div>
+            </div>
+
+            <div style="background-color: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px; font-family: var(--font-mono); font-size: 11.5px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                <div><span style="color: var(--text-dim);">Case ID:</span> <span id="certCaseId" style="color: var(--primary); font-weight: 800;"></span></div>
+                <div><span style="color: var(--text-dim);">Evidence Fingerprint (SHA-256):</span> <span id="certSha256" style="color: var(--success); font-weight: 700; word-break: break-all;"></span></div>
+                <div><span style="color: var(--text-dim);">Blockchain Record Network:</span> Polygon PoS (Mainnet Anchor)</div>
+                <div><span style="color: var(--text-dim);">Block Number:</span> #<span id="certBlockNum" style="color: var(--purple); font-weight: 800;"></span></div>
+                <div><span style="color: var(--text-dim);">Smart Contract ID:</span> 0x742d35Cc6634C0532925a3b844Bc454e4438f44e</div>
+                <div><span style="color: var(--text-dim);">Transaction Record ID:</span> <span id="certTxHash" style="color: var(--danger); font-weight: 700; word-break: break-all;"></span></div>
+                <div><span style="color: var(--text-dim);">Status:</span> <span style="color: var(--success); font-weight: 800;">VERIFIED & TAMPER-PROOF (128 Confirmations)</span></div>
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; border-left: 3px solid var(--accent-saffron); padding-left: 12px; margin-bottom: 18px; background: var(--bg-subtle); padding: 10px 12px;">
+                <strong style="color: var(--primary);">Official Court Evidence Statement:</strong><br/>
+                <span id="certDeclaration"></span>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="action-btn-secondary" onclick="closeBlockchainModal()">Close</button>
+                <button class="action-btn-primary" onclick="exportForensicPdf()">Print Legal Court Certificate (PDF)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: THREAT SIMULATOR / EMAIL EDITOR ================= -->
+    <div class="modal-overlay" id="simulatorModal" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg" style="max-width: 680px; width: 92%;">
+            <button class="modal-close-btn" onclick="closeSimulatorModal()">&times;</button>
+            
+            <div class="modal-title-row">
+                <div class="modal-icon-badge" style="background-color: var(--primary);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </div>
+                <div>
+                    <h2 style="font-size: 15px; color: var(--primary); font-weight: 800;">Email Threat Simulation Studio</h2>
+                    <p style="font-size: 11px; color: var(--text-dim); font-weight: 600;">Edit or compose custom emails to test real-time AI detection, GeoIP origin tracking, and legal hashing live</p>
+                </div>
+            </div>
+
+            <!-- Toolbar buttons to quickly prefill -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; background: var(--bg-subtle); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Quick Fill:</span>
+                <button type="button" class="sim-chip-btn" onclick="loadCurrentIntoSimulator()">Load Active Case</button>
+                <button type="button" class="sim-chip-btn" onclick="loadSimPreset('homoglyph')">AICTE Spoof Preset</button>
+                <button type="button" class="sim-chip-btn" onclick="loadSimPreset('bec')">Campus BEC Preset</button>
+                <button type="button" class="sim-chip-btn" onclick="loadSimPreset('clean')">Clean Notice Preset</button>
+            </div>
+
+            <form id="simForm" onsubmit="submitSimulatedEmail(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Sender Display Name</label>
+                        <input type="text" id="simFromName" class="form-input" placeholder="e.g. Director, AICTE" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sender Email Address (From:)</label>
+                        <input type="text" id="simFromEmail" class="form-input" placeholder="e.g. director@aicte-india.org" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Simulated Originating Server IP</label>
+                        <select id="simOriginIpSelect" class="form-select" onchange="onSimIpSelectChange(this.value)">
+                            <option value="185.220.101.5">185.220.101.5 — Frankfurt, Germany (Tor Exit)</option>
+                            <option value="185.220.102.8">185.220.102.8 — Amsterdam, Netherlands (Tor Relay)</option>
+                            <option value="185.193.88.21">185.193.88.21 — Bucharest, Romania (Bulletproof Hosting)</option>
+                            <option value="118.193.41.102">118.193.41.102 — Kowloon, Hong Kong (Datacenter Proxy)</option>
+                            <option value="198.98.56.12">198.98.56.12 — Dallas, United States (Commercial VPN)</option>
+                            <option value="103.27.8.44">103.27.8.44 — New Delhi, India (NIC Govt Infrastructure)</option>
+                            <option value="custom">Enter Custom IP Address...</option>
+                        </select>
+                        <input type="text" id="simCustomIp" class="form-input" style="display: none; margin-top: 6px;" placeholder="e.g. 82.165.197.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reply-To Address (Optional diversion)</label>
+                        <input type="text" id="simReplyTo" class="form-input" placeholder="Leave blank or enter suspicious address">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Subject Line</label>
+                    <input type="text" id="simSubject" class="form-input" placeholder="e.g. URGENT: Institutional Action Required within 24 Hours" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label class="form-label" style="margin-bottom: 0;">Email Body Content</label>
+                        <span style="font-size: 10.5px; color: var(--text-dim);">One-Click Attack Injectors:</span>
+                    </div>
+                    <!-- Quick Attack Snippets -->
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+                        <button type="button" class="inject-chip" onclick="injectSnippet('extortion')">+ Add INR 50,000 Extortion</button>
+                        <button type="button" class="inject-chip" onclick="injectSnippet('fir')">+ Add 24h Police FIR Threat</button>
+                        <button type="button" class="inject-chip" onclick="injectSnippet('bank')">+ Add Bank Account Details</button>
+                        <button type="button" class="inject-chip" onclick="injectSnippet('dropper')">+ Add .pdf.exe Dropper Link</button>
+                    </div>
+                    <textarea id="simBody" class="form-input" rows="5" style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.4;" placeholder="Type or paste the email body text here..."></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                    <span style="font-size: 11px; color: var(--text-dim);">
+                        Simulates instant MIME parsing, NLP threat scoring, and GeoLocation tracking.
+                    </span>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="action-btn-secondary" onclick="closeSimulatorModal()">Cancel</button>
+                        <button type="submit" class="action-btn-primary" style="background-color: var(--accent-saffron); border-color: #e68a00;">
+                            Run Live Simulation & Analyze
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- Frontend App Logic (v13.0 security patched cache buster) -->
+    <script src="/static/app.js?v=13.0"></script>
+
+</body>
+</html>

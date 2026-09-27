@@ -1,0 +1,31 @@
+Delivered-To: student-affairs@engineering-college.edu.in
+Received: by 103.141.51.10 with SMTP id hub_delhi_04;
+        Fri, 25 Sep 2026 11:20:14 +0530 (IST)
+Received: from mx-cloud.protect-gw.in (mx-cloud.protect-gw.in [103.15.24.89])
+        by mail.engineering-college.edu.in with ESMTP id 55A9B801;
+        Fri, 25 Sep 2026 05:49:10 +0000
+Received: from exit-ams-01.privacyfoundation.org ([185.220.102.8])
+        by mx-cloud.protect-gw.in with ESMTP id 9928AF10;
+        Fri, 25 Sep 2026 05:47:00 +0000
+Authentication-Results: engineering-college.edu.in;
+        spf=fail (domain pmsss-scholarship-gov.top does not permit 185.220.102.8);
+        dkim=fail (signature missing);
+        dmarc=fail (p=reject)
+From: "PMSSS Central Scholarship Cell" <disbursement@pmsss-scholarship-gov.top>
+To: "Scholarship Nodal Officer" <student-affairs@engineering-college.edu.in>
+Reply-To: "Verification Desk" <kyc-portal@aicte-grant-apply.xyz>
+Subject: URGENT: Discontinuation of PMSSS Student Scholarship Grant (Action Required within 48 Hours)
+Date: Fri, 25 Sep 2026 11:15:00 +0530
+Message-ID: <pmsss.grant.20260925@pmsss-scholarship-gov.top>
+Content-Type: text/plain; charset="UTF-8"
+
+CONFIDENTIAL SCHOLARSHIP ALERT:
+
+According to the latest PMSSS Audit Bureau review, mandatory student Aadhaar and bank account credentials for 24 scholarship beneficiaries enrolled in your institution have been found unverified.
+
+If the credentials are not verified within 48 hours, all disbursed stipend funds of INR 1,20,000 per student will be cancelled and recovery initiated.
+
+Instruct all students to update their biometric Aadhaar credentials immediately:
+http://185.220.102.8/portal-verify/student-kyc-auth
+
+Failure to comply within the 48-hour deadline will lead to administrative penalties.

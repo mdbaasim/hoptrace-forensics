@@ -1,0 +1,33 @@
+Delivered-To: finance-officer@state-univ.edu.in
+Received: by 103.141.51.10 with SMTP id mail_hub_01;
+        Wed, 23 Sep 2026 14:15:22 +0530 (IST)
+Received: from mail-relay.linode-cloud.net ([45.33.32.156])
+        by mail-gateway.state-univ.edu.in with ESMTP id 9A72B401;
+        Wed, 23 Sep 2026 08:44:10 +0000
+Received: from client-workstation.vpn ([198.98.56.12])
+        by mail-relay.linode-cloud.net with ESMTP id 5582AA;
+        Wed, 23 Sep 2026 08:42:30 +0000
+Authentication-Results: state-univ.edu.in;
+        spf=softfail;
+        dkim=none
+From: "National Lab Instruments Vendor" <billing@univ-finance-desk.net>
+To: "Finance Officer" <finance-officer@state-univ.edu.in>
+Reply-To: "Accounts Department" <settlements@vendor-pay-hub.xyz>
+Subject: URGENT: Updated Bank Details for Invoice #INV-2026-8812 (Payment Diversion Notice)
+Date: Wed, 23 Sep 2026 14:12:00 +0530
+Message-ID: <vendor.invoices.20260923@univ-finance-desk.net>
+Content-Type: text/plain; charset="UTF-8"
+
+Dear Finance Officer,
+
+Regarding the outstanding invoice #INV-2026-8812 for the amount of INR 14,50,000 for advanced engineering robotics equipment:
+
+Please be advised that our primary bank account with State Bank of India is undergoing annual statutory audit. Consequently, do not disburse funds to our old account.
+
+Kindly initiate the wire transfer immediately to our updated reserve settlement account:
+Account Holder: HighTech Instrument Supplies Pvt Ltd
+Account Number: 501004829104
+IFSC Code: HDFC0000128
+Branch: Cyber City Corporate Branch
+
+Please treat this as urgent to avoid stoppage of equipment deliveries scheduled for tomorrow.
